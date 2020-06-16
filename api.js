@@ -3,7 +3,7 @@
 const random = require('randomstring');
 const express = require('express');
 const app = express();
-const db = require('./database.js');
+let db;
 
 app.get('/api/cache', async (req, res) => {
   res.send(await db.keys());
@@ -18,7 +18,9 @@ app.get('/api/cache/:key', async (req, res) => {
   } else {
     console.log(`Cache hit for ${key}`);
   }
-  res.send(data);
+  res.send({
+    value: data.value
+  });
 });
 
 app.put('/api/cache/:key', async (req, res) => {
@@ -30,7 +32,9 @@ app.put('/api/cache/:key', async (req, res) => {
     });
   } else {
     await db.put(key, random.generate());
-    res.send(data);
+    res.send({
+      value: data.value
+    });
   }
 });
 
@@ -56,4 +60,7 @@ app.delete('/api/cache', async (req, res) => {
   });
 });
 
-module.exports = app;
+module.exports = (database) => {
+  db = database;
+  return app;
+}

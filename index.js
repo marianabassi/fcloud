@@ -1,7 +1,7 @@
 'use strict'
-
-const api = require('./api.js');
-
-api.listen(3000, function() {
-  console.log('Cache api listening on port 3000!');
+require('./database.js')().then((db) => {
+  const api = require('./api.js')(db);
+  api.listen(3000, function() {
+    console.log('Cache api listening on port 3000!');
+  });
 });
