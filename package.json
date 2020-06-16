@@ -1,0 +1,19 @@
+{
+  "name": "fcloud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*.spec.js --exit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "express": "^4.17.1",
+    "mocha": "^8.0.1",
+    "mongodb": "^3.5.9",
+    "randomstring": "^1.1.5"
+  }
+}
