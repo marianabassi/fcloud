@@ -1,9 +1,24 @@
 'use strict'
 const MongoClient = require('mongodb').MongoClient;
 
-// 3 thousand miliseconds / 3 seconds
 const TTL = 3000;
-const MAX_KEYS = 10;
+const MAX_KEYS = 5;
+
+async function checkMax(collection) {
+  const diff = await collection.countDocuments() - MAX_KEYS;
+  if (diff > 0) {
+    // removing oldest documents first
+    (await collection.find({}, {
+      order: {
+        expireIn: 1
+      }
+    }).limit(diff).toArray()).forEach(async (data) => {
+      await collection.deleteOne({
+        _id: data._id
+      });
+    })
+  }
+}
 
 module.exports = async (uri) => {
   const options = {
@@ -31,6 +46,7 @@ module.exports = async (uri) => {
           }, {
             upsert: true
           });
+          checkMax(collection);
           return data;
         }
       }
@@ -46,6 +62,7 @@ module.exports = async (uri) => {
       }, data, {
         upsert: true
       });
+      checkMax(collection);
       return data;
     },
     keys: async () => {
