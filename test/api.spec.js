@@ -1,15 +1,23 @@
 'use strict'
 
+const mongodb = require('mongodb-memory-server');
+const MongoMemoryServer = mongodb.MongoMemoryServer;
+const mongod = new MongoMemoryServer();
+
 const chai = require('chai'),
   chaiHttp = require('chai-http'),
   expect = chai.expect,
   should = chai.should();
 
 chai.use(chaiHttp);
-
-const api = require('../api.js');
+let api;
 
 describe('cache api', function() {
+  before(async function() {
+    const uri = await mongod.getUri();
+    const db = await require('../database.js')(uri);
+    api = require('../api.js')(db);
+  });
   it('Should get a brand new value', async function() {
     const res = await chai.request(api).get('/api/cache/buddy');
     res.should.have.status(200);
